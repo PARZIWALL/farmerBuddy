@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Your Form - Krishi Form Filler</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .download-card {
+            margin-top: 10vh;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-seedling"></i> Krishi Form Filler
+            </a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg text-center download-card">
+                    <div class="card-header bg-success text-white">
+                        <h3><i class="fas fa-check-circle"></i> Your Form is Ready!</h3>
+                    </div>
+                    <div class="card-body p-5">
+                        <p class="lead">Your application form has been successfully filled by our AI assistant.</p>
+                        <i class="fas fa-file-word fa-4x text-primary my-4"></i>
+                        <h5 class="mb-4">{{ filename }}</h5>
+                        <a href="{{ url_for('download_form', filename=filename) }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-download"></i> Download Form
+                        </a>
+                        <div class="mt-4">
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Please review the downloaded document for accuracy before submission.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
