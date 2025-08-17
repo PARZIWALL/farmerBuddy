@@ -24,7 +24,7 @@ app.secret_key = 'your_super_secret_key' # Change this in production
 # --- Gemini API Configuration ---
 # IMPORTANT: Set your GEMINI_API_KEY as an environment variable
 # For example, in your terminal: export GEMINI_API_KEY="your_actual_api_key"
-GEMINI_API_KEY =("GEMINI_API_KEY")
+GEMINI_API_KEY ="GEMINI_API_KEY"
 model = None
 if GEMINI_API_KEY:
     try:
