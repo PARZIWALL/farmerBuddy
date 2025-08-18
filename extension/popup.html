@@ -1,203 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMFBY Claim Assistant</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Krishi Extension - Popup</title>
+  <style>
+    :root{--brand:#0b5aa6;--accent:#0f6fb5;--muted:#6b7280}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f6f9fb;color:#0b1220;width:420px}
+    header{background:linear-gradient(90deg,var(--brand),var(--accent));color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px}
+    header .logo{font-weight:700;padding:6px 8px;background:rgba(255,255,255,0.08);border-radius:6px}
+    .wrap{padding:12px}
+    label{font-size:13px;color:#334155;display:block;margin-bottom:6px}
+    select,input[type="text"],input[type="file"]{width:100%;padding:8px;border-radius:6px;border:1px solid #dbe6f2;font-size:13px}
+    .row{display:flex;gap:8px}
+    .col{flex:1}
+    .btn{background:var(--brand);color:#fff;border:0;padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:600}
+    .btn.secondary{background:#6b7280}
+    .card{background:#fff;border-radius:8px;padding:10px;margin-top:10px;box-shadow:0 6px 20px rgba(15,23,42,0.06)}
+    .muted{color:var(--muted);font-size:12px}
+    .small{font-size:12px;color:var(--muted)}
+    .status{font-size:12px;color:#0b1220;margin-top:8px}
+    .progress{height:8px;background:#eef6ff;border-radius:8px;overflow:hidden;margin-top:8px}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#20c997,#0b5aa6)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .field{margin-top:8px}
+    img.preview{max-width:100%;border-radius:6px;margin-top:8px}
+    textarea{width:100%;height:72px;border-radius:6px;border:1px solid #dbe6f2;padding:8px}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <div class="logo-section">
-                    <i class="fas fa-shield-alt"></i>
-                    <div class="title-group">
-                        <h1>PMFBY Claim Assistant</h1>
-                        <p class="subtitle">Pradhan Mantri Fasal Bima Yojana</p>
-                    </div>
-                </div>
-                <div class="status-indicator">
-                    <span class="status-dot"></span>
-                    <span class="status-text">Ready</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section" id="scheme-selection-section">
-            <div class="section-header">
-                <i class="fas fa-list-alt"></i>
-                <h3>Select Claim Scheme</h3>
-            </div>
-            <div class="form-group">
-                <label for="schemeSelect">Choose the appropriate scheme type:</label>
-                <div class="select-wrapper">
-                    <select id="schemeSelect" class="form-select">
-                        <option value="" disabled selected>Select claim type</option>
-                        <option value="yield_loss">🌾 Yield Loss Claims (Area Approach)</option>
-                        <option value="prevented_sowing">🚫 Prevented Sowing/Planting</option>
-                        <option value="post_harvest">📦 Post-Harvest Losses</option>
-                    </select>
-                    <i class="fas fa-chevron-down select-arrow"></i>
-                </div>
-            </div>
-        </div>
-
-        <div id="rules-section" class="section hidden">
-            <div class="section-header">
-                <i class="fas fa-info-circle"></i>
-                <h3>Eligibility Criteria</h3>
-            </div>
-            <div id="ruleContent" class="rules-content"></div>
-            <div class="important-notice">
-                <i class="fas fa-clock"></i>
-                <span><strong>Important Timeline:</strong> Loss intimation within <strong>72 hours</strong> for localized calamities, harvest data within <strong>15 days</strong> of harvest completion.</span>
-            </div>
-        </div>
-
-        <div id="upload-section" class="section hidden">
-            <div class="section-header">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <h3>Document Upload</h3>
-            </div>
-            <div class="upload-area">
-                <div class="upload-content">
-                    <i class="fas fa-file-pdf upload-icon"></i>
-                    <h4>Upload Farmer's Application</h4>
-                    <p>Select PDF document containing farmer details</p>
-                    <label for="documentUpload" class="upload-btn">
-                        <i class="fas fa-plus"></i>
-                        Choose PDF File
-                    </label>
-                    <input type="file" id="documentUpload" accept=".pdf" hidden>
-                </div>
-                <div class="upload-info">
-                    <div id="fileName" class="file-name">No file selected</div>
-                    <div id="statusMessage" class="status-message"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="loader" class="section loader-section hidden">
-            <div class="loader-content">
-                <div class="modern-loader">
-                    <div class="loader-ring"></div>
-                    <div class="loader-ring"></div>
-                    <div class="loader-ring"></div>
-                </div>
-                <h4>Processing Document</h4>
-                <p class="loader-text">Extracting farmer details and checking eligibility...</p>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="form-section" class="section hidden">
-            <div class="section-header">
-                <i class="fas fa-user-check"></i>
-                <h3>Farmer Details</h3>
-            </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="farmerName">
-                        <i class="fas fa-user"></i>
-                        Farmer Name
-                    </label>
-                    <input type="text" id="farmerName" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="mobileNumber">
-                        <i class="fas fa-mobile-alt"></i>
-                        Mobile Number
-                    </label>
-                    <input type="text" id="mobileNumber" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="cropType">
-                        <i class="fas fa-seedling"></i>
-                        Crop Type
-                    </label>
-                    <input type="text" id="cropType" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="affectedArea">
-                        <i class="fas fa-map-marked-alt"></i>
-                        Affected Area (hectares)
-                    </label>
-                    <input type="number" id="affectedArea" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="actualYield">
-                        <i class="fas fa-weight"></i>
-                        Actual Yield (qtl/ha)
-                    </label>
-                    <input type="number" id="actualYield" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="thresholdYield">
-                        <i class="fas fa-target"></i>
-                        Threshold Yield (qtl/ha)
-                    </label>
-                    <input type="number" id="thresholdYield" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="sumInsured">
-                        <i class="fas fa-rupee-sign"></i>
-                        Sum Insured (₹)
-                    </label>
-                    <input type="number" id="sumInsured" class="form-input" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="calamityType">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Calamity Type
-                    </label>
-                    <input type="text" id="calamityType" class="form-input" readonly>
-                </div>
-            </div>
-            
-            <div class="photo-section">
-                <div class="section-header">
-                    <i class="fas fa-camera"></i>
-                    <h3>Damage Photographs (from document)</h3>
-                </div>
-                <div class="photo-container">
-                    <img id="damagePhoto" src="" alt="Damage Photo" class="damage-photo hidden">
-                    <div id="photoStatus" class="photo-status"></div>
-                </div>
-            </div>
-
-            <div id="eligibilityResult" class="eligibility-result"></div>
-            
-            <div class="action-section">
-                <button id="approveBtn" class="btn btn-approve" disabled>
-                    <i class="fas fa-check-circle"></i>
-                    Approve Claim
-                </button>
-                <button id="rejectBtn" class="btn btn-reject" disabled>
-                    <i class="fas fa-times-circle"></i>
-                    Reject Claim
-                </button>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>© 2025 Government of India | PMFBY Digital Assistant</p>
-        </div>
+  <header>
+    <div class="logo">Krishi</div>
+    <div>
+      <div style="font-weight:700">Form Filler</div>
+      <div class="small">CSC Extension</div>
     </div>
-    
-    <script src="popup.js"></script>
+  </header>
+
+  <div class="wrap">
+    <!-- Scheme selection -->
+    <div class="card">
+      <label for="schemeSelect">Select Scheme</label>
+      <select id="schemeSelect">
+        <option value="">-- choose scheme --</option>
+        <option value="pm-kisan">PM-Kisan</option>
+        <option value="kcc">KCC</option>
+        <option value="ridf">RIDF</option>
+      </select>
+      <div id="ruleContent" class="small muted" style="margin-top:8px">Select a scheme to view rules.</div>
+    </div>
+
+    <!-- Upload area & User ID + Autofill -->
+    <div class="card" id="upload-section">
+      <label for="documentUpload">Upload Document (PDF)</label>
+      <input id="documentUpload" type="file" accept="application/pdf" />
+
+      <div class="status" id="statusMessage">Choose a PDF of the document to process (demo uses mock data).</div>
+
+      <div class="progress" style="display:none" id="progressWrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <!-- User ID (paste) + Autofill button -->
+      <div style="margin-top:12px">
+        <label for="userIdInput">User ID (paste the ID from upload)</label>
+        <div class="row" style="align-items:center">
+          <input id="userIdInput" type="text" placeholder="e.g. 123e4567-e89b-12d3-a456-426614174000" />
+          <button id="autofillPageBtn" class="btn" style="margin-left:6px">Autofill Page</button>
+        </div>
+        <div id="autofillStatus" class="hint"></div>
+      </div>
+
+      <div style="margin-top:12px" class="small muted">
+        <strong>Note:</strong> For demo the file processing is mocked. Autofill will call your backend `/auto_fill_user` and instruct the page to inject values.
+      </div>
+    </div>
+
+    <!-- Result / Farmer form (read-only fields) -->
+    <div class="card" id="form-section" style="display:none">
+      <div style="font-weight:700">Extracted Data (preview)</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Name</label>
+          <input id="farmerName" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Mobile</label>
+          <input id="mobileNumber" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Crop</label>
+          <input id="cropType" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Affected Area</label>
+          <input id="affectedArea" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Actual Yield</label>
+          <input id="actualYield" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Threshold Yield</label>
+          <input id="thresholdYield" type="text" readonly />
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Damage Photo (preview)</label>
+        <img id="damagePhoto" class="preview" src="" alt="damage" style="display:none" />
+      </div>
+
+      <div style="margin-top:10px" class="small muted" id="eligibilityResult"></div>
+
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="approveBtn" class="btn">Approve</button>
+        <button id="rejectBtn" class="btn secondary">Reject</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;text-align:center" class="small muted">v0.1 — popup</div>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>
