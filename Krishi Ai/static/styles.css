@@ -1,0 +1,118 @@
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.chat-container {
+    max-width: 800px;
+    margin: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 85%;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.user-message .avatar {
+    background-color: #007bff;
+}
+
+.assistant-message .avatar {
+    background-color: #28a745;
+}
+
+.message .text {
+    padding: 12px 18px;
+    border-radius: 18px;
+    line-height: 1.5;
+}
+
+.user-message {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.user-message .text {
+    background-color: #007bff;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.assistant-message {
+    align-self: flex-start;
+}
+
+.assistant-message .text {
+    background-color: #e9ecef;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-input-area {
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    background-color: #f8f9fa;
+}
+
+#user-input {
+    border-radius: 20px 0 0 20px;
+    border-right: none;
+}
+
+#user-input:focus {
+    box-shadow: none;
+    border-color: #28a745;
+}
+
+#send-btn {
+    border-radius: 0 20px 20px 0;
+}
+
+/* Typing Indicator */
+.typing-indicator .text span {
+    height: 8px;
+    width: 8px;
+    background-color: #888;
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.3s infinite;
+}
+.typing-indicator .text span:nth-of-type(2) { animation-delay: 0.15s; }
+.typing-indicator .text span:nth-of-type(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+}

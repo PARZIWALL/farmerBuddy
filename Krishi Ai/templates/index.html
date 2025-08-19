@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Mitra - AI Farming Assistant</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #4CAF50;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ADDED: Styling for tables */
+        .message.bot table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .message.bot th, .message.bot td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .message.bot th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #4CAF50;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .send-button:hover {
+            background: #45a049;
+        }
+
+        .send-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .error-message {
+            color: #f44336;
+            font-style: italic;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .chat-container {
+                width: 95%;
+                height: 90vh;
+            }
+            
+            .chat-header h1 {
+                font-size: 20px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🌾 Krishi Mitra</h1>
+            <p>Your AI-powered farming assistant</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-content">
+                    {{ initial_greeting }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="message-content">
+                <span>Krishi Mitra is thinking</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Ask me about farming, weather, crops, market prices..." autocomplete="off">
+            <button id="sendButton" class="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            // UPDATED: Process content through Marked.js for bot messages
+            if (isUser) {
+                contentDiv.textContent = content; // User messages are plain text
+            } else {
+                contentDiv.innerHTML = marked.parse(content); // Bot messages are parsed as Markdown
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'flex';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, true);
+            chatInput.value = '';
+            
+            // Disable input and show typing indicator
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message }),
+                });
+
+                const data = await response.json();
+                
+                hideTypingIndicator();
+                
+                if (response.ok) {
+                    addMessage(data.response);
+                } else {
+                    addMessage(`<span class="error-message">Error: ${data.error || 'Something went wrong'}</span>`);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage(`<span class="error-message">Network error: ${error.message}</span>`);
+            }
+
+            // Re-enable input
+            chatInput.disabled = false;
+            sendButton.disabled = false;
+            chatInput.focus();
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Focus on input when page loads
+        chatInput.focus();
+    </script>
+</body>
+</html>
