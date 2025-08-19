@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Form Filling - Step 1 - Krishi Form Filler</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .upload-card {
+            border-left: 4px solid #007bff;
+        }
+        .upload-card-optional {
+            border-left-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-seedling"></i> Krishi Form Filler
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">
+            <i class="fas fa-edit"></i> Manual Form Filling
+            <small class="text-muted">- Step 1: Upload Files</small>
+        </h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('manual_fill') }}" method="post" enctype="multipart/form-data" id="manualUploadForm">
+            <input type="hidden" name="step" value="1">
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100 upload-card">
+                        <div class="card-body">
+                            <h5 class="card-title"><span class="badge badge-primary">Required</span> Upload Form Template</h5>
+                            <p class="text-muted">Upload the blank application form you want to fill. Must be a `.docx` file.</p>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="form_template" name="form_template" required accept=".docx">
+                                <label class="custom-file-label" for="form_template">Choose DOCX file...</label>
+                            </div>
+                            <div class="alert alert-warning mt-3 small">
+                                <i class="fas fa-info-circle"></i> Our AI will analyze this file to identify all the fillable fields.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100 upload-card-optional">
+                        <div class="card-body">
+                            <h5 class="card-title"><span class="badge badge-info">Optional</span> AI Pre-fill Assistance</h5>
+                            <p class="text-muted">Upload your supporting documents (Aadhaar, Bank Passbook, etc.) to let our AI pre-fill the form for you.</p>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="support_documents" name="support_documents" multiple accept=".pdf,.png,.jpg,.jpeg,.docx">
+                                <label class="custom-file-label" for="support_documents">Choose support docs...</label>
+                            </div>
+                            <div class="alert alert-success mt-3 small">
+                                <i class="fas fa-magic"></i> This can save you a lot of time! Supported formats: PDF, PNG, JPG, DOCX.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-3">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                        <i class="fas fa-cogs"></i> Analyze Form & Proceed
+                    </button>
+                    <div class="mt-2">
+                        <small class="text-muted">In the next step, you'll review the fields and fill in your information.</small>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="mt-4 mb-5">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update file input labels with selected filenames
+        $('.custom-file-input').on('change', function() {
+            let files = $(this).prop('files');
+            let label = files.length > 1 ? `${files.length} files selected` : files[0].name;
+            $(this).next('.custom-file-label').html(label);
+        });
+
+        // Show loading state on submit
+        $('#manualUploadForm').on('submit', function() {
+            $('#submitBtn').html('<i class="fas fa-spinner fa-spin"></i> Analyzing... Please Wait').prop('disabled', true);
+        });
+    </script>
+</body>
+</html>

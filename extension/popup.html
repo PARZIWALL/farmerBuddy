@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Krishi Extension - Popup</title>
+  <style>
+    :root{--brand:#0b5aa6;--accent:#0f6fb5;--muted:#6b7280}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f6f9fb;color:#0b1220;width:420px}
+    header{background:linear-gradient(90deg,var(--brand),var(--accent));color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px}
+    header .logo{font-weight:700;padding:6px 8px;background:rgba(255,255,255,0.08);border-radius:6px}
+    .wrap{padding:12px}
+    label{font-size:13px;color:#334155;display:block;margin-bottom:6px}
+    select,input[type="text"],input[type="file"]{width:100%;padding:8px;border-radius:6px;border:1px solid #dbe6f2;font-size:13px}
+    .row{display:flex;gap:8px}
+    .col{flex:1}
+    .btn{background:var(--brand);color:#fff;border:0;padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:600}
+    .btn.secondary{background:#6b7280}
+    .card{background:#fff;border-radius:8px;padding:10px;margin-top:10px;box-shadow:0 6px 20px rgba(15,23,42,0.06)}
+    .muted{color:var(--muted);font-size:12px}
+    .small{font-size:12px;color:var(--muted)}
+    .status{font-size:12px;color:#0b1220;margin-top:8px}
+    .progress{height:8px;background:#eef6ff;border-radius:8px;overflow:hidden;margin-top:8px}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#20c997,#0b5aa6)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .field{margin-top:8px}
+    img.preview{max-width:100%;border-radius:6px;margin-top:8px}
+    textarea{width:100%;height:72px;border-radius:6px;border:1px solid #dbe6f2;padding:8px}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Krishi</div>
+    <div>
+      <div style="font-weight:700">Form Filler</div>
+      <div class="small">CSC Extension</div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- Scheme selection -->
+    <div class="card">
+      <label for="schemeSelect">Select Scheme</label>
+      <select id="schemeSelect">
+        <option value="">-- choose scheme --</option>
+        <option value="pm-kisan">PM-Kisan</option>
+        <option value="kcc">KCC</option>
+        <option value="ridf">RIDF</option>
+      </select>
+      <div id="ruleContent" class="small muted" style="margin-top:8px">Select a scheme to view rules.</div>
+    </div>
+
+    <!-- Upload area & User ID + Autofill -->
+    <div class="card" id="upload-section">
+      <label for="documentUpload">Upload Document (PDF)</label>
+      <input id="documentUpload" type="file" accept="application/pdf" />
+
+      <div class="status" id="statusMessage">Choose a PDF of the document to process (demo uses mock data).</div>
+
+      <div class="progress" style="display:none" id="progressWrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <!-- User ID (paste) + Autofill button -->
+      <div style="margin-top:12px">
+        <label for="userIdInput">User ID (paste the ID from upload)</label>
+        <div class="row" style="align-items:center">
+          <input id="userIdInput" type="text" placeholder="e.g. 123e4567-e89b-12d3-a456-426614174000" />
+          <button id="autofillPageBtn" class="btn" style="margin-left:6px">Autofill Page</button>
+        </div>
+        <div id="autofillStatus" class="hint"></div>
+      </div>
+
+      <div style="margin-top:12px" class="small muted">
+        <strong>Note:</strong> For demo the file processing is mocked. Autofill will call your backend `/auto_fill_user` and instruct the page to inject values.
+      </div>
+    </div>
+
+    <!-- Result / Farmer form (read-only fields) -->
+    <div class="card" id="form-section" style="display:none">
+      <div style="font-weight:700">Extracted Data (preview)</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Name</label>
+          <input id="farmerName" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Mobile</label>
+          <input id="mobileNumber" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Crop</label>
+          <input id="cropType" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Affected Area</label>
+          <input id="affectedArea" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Actual Yield</label>
+          <input id="actualYield" type="text" readonly />
+        </div>
+        <div class="field">
+          <label>Threshold Yield</label>
+          <input id="thresholdYield" type="text" readonly />
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Damage Photo (preview)</label>
+        <img id="damagePhoto" class="preview" src="" alt="damage" style="display:none" />
+      </div>
+
+      <div style="margin-top:10px" class="small muted" id="eligibilityResult"></div>
+
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="approveBtn" class="btn">Approve</button>
+        <button id="rejectBtn" class="btn secondary">Reject</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;text-align:center" class="small muted">v0.1 — popup</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

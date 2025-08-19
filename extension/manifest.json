@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Krishi Form Filler",
+  "version": "0.1",
+  "description": "Autofill CSC portal forms using stored user docs + backend RAG",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:5000/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Krishi Form Filler"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
